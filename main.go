@@ -11,7 +11,7 @@ func main() {
 }
 
 func test1() {
-	g, err := guid.NewGuid(0)
+	g, err := guid.NewGuid()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -22,7 +22,7 @@ func test1() {
 }
 
 func test2() {
-	g, err := guid.NewGuid(100)
+	g, err := guid.NewGuid()
 	if err != nil {
 		fmt.Println(err)
 		return

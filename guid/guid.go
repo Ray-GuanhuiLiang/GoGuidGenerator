@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"os"
+	"strconv"
 )
 
 const MaxUint = ^uint32(0)
@@ -24,17 +25,10 @@ type Guid struct {
 /**
  * 只会用到这个workId的前三个字节
  */
-func NewGuid(workId uint32) (*Guid, error) {
-	newWorkId := workId & 0x00FFFFFF
-	if (newWorkId != workId) {
-		return nil, errors.New("input workid is too large!!")
-	}
-	if workId == 0 {
-		wid, err := defaultWorkId()
-		if err != nil {
-			return nil, err
-		}
-		workId = wid
+func NewGuid() (*Guid, error) {
+	workId, err := defaultWorkId()
+	if err != nil {
+		return nil, err
 	}
 	return &Guid{workId: workId}, nil
 }
@@ -63,19 +57,19 @@ func defaultWorkId() (uint32, error) {
 		buf.WriteByte(byte(0))
     }
 	
-	//fmt.Println(buf.String())
+	buf.WriteString(strconv.Itoa(os.Getpid()))
 	
 	bs := md5.Sum(buf.Bytes())
 	//fmt.Println(bs)
 	
-	pid := os.Getpid()
 	
-	ret := uint32(bs[0]) << 24 + uint32(bs[1]) << 16 + uint32(pid & 0xFF00) + uint32(pid & 0xFF)
+	ret := uint32(bs[0]) << 24 + uint32(bs[1]) << 16 + uint32(bs[2]) << 8 + uint32(bs[3])
 	//fmt.Println(ret)
 	
 	return ret, nil
 }
 
+// GUID = TimeStamp(32bit) + workId(16bit) + IncNo(16bit)
 func (this *Guid) Generate() (uint64, error) {
 	cur := (uint32)(time.Now().Unix())
 	
