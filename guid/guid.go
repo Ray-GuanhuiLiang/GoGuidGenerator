@@ -76,7 +76,7 @@ func defaultWorkId() (uint32, error) {
 	return ret, nil
 }
 
-func (this *Guid) Generate() (uint64, error) {
+func (this Guid) Generate() (uint64, error) {
 	cur := (uint32)(time.Now().Unix())
 	
 	this.Lock()
