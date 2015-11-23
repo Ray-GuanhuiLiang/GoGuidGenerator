@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"crypto/md5"
 	"os"
-	"strconv"
 )
 
 const MaxUint = ^uint32(0)
@@ -64,14 +63,14 @@ func defaultWorkId() (uint32, error) {
 		buf.WriteByte(byte(0))
     }
 	
-	buf.WriteString(strconv.Itoa(os.Getpid()))
-	
 	//fmt.Println(buf.String())
 	
 	bs := md5.Sum(buf.Bytes())
 	//fmt.Println(bs)
 	
-	ret := uint32(bs[0]) << 24 + uint32(bs[1]) << 16 + uint32(bs[2]) << 8 + uint32(bs[0])
+	pid := os.Getpid()
+	
+	ret := uint32(bs[0]) << 24 + uint32(bs[1]) << 16 + uint32(pid & 0xFF00) + uint32(pid & 0xFF)
 	//fmt.Println(ret)
 	
 	return ret, nil
@@ -80,7 +79,6 @@ func defaultWorkId() (uint32, error) {
 func (this *Guid) Generate() (uint64, error) {
 	cur := (uint32)(time.Now().Unix())
 	
-	// 这个是带锁版本，有机会写个不带锁版本
 	this.Lock()
 	if cur > this.lastTime {
 		this.lastTime = cur

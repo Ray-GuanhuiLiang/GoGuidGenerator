@@ -19,16 +19,6 @@ func test1() {
 	for i:=0; i<3; i++ {
 		fmt.Println(g.Generate())
 	}
-	fmt.Println("---------------------")
-	time.Sleep(1 * time.Second)
-	for i:=0; i<3; i++ {
-		fmt.Println(g.Generate())
-	}
-	fmt.Println("---------------------")
-	time.Sleep(1 * time.Second)
-	for i:=0; i<3; i++ {
-		fmt.Println(g.Generate())
-	}
 }
 
 func test2() {
