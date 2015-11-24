@@ -36,3 +36,16 @@ func mockMaxGenerate(g *Guid, t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkGuidGenerate(b *testing.B) {
+	b.StopTimer()
+	g, err := NewGuid()
+	if err != nil {
+		b.Error(err)
+		return
+	}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		g.Generate()
+	}
+}
