@@ -70,7 +70,7 @@ func defaultWorkId() (uint32, error) {
 }
 
 // GUID = TimeStamp(32bit) + workId(16bit) + IncNo(16bit)
-func (this *Guid) Generate() (uint64, error) {
+func (this Guid) Generate() (uint64, error) {
 	cur := (uint32)(time.Now().Unix())
 	
 	this.Lock()
