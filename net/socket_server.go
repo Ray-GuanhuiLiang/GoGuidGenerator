@@ -1,18 +1,18 @@
 package server
 
 import (
-	"net"
-	"log"
 	"github.com/Ray-GuanhuiLiang/GoGuidGenerator/common"
+	"log"
+	"net"
 	"strconv"
 )
 
 type TcpServer struct {
 	generator common.Generator
-	exit chan int
+	exit      chan int
 }
 
-func NewTcpServer(generator common.Generator) (*TcpServer) {
+func NewTcpServer(generator common.Generator) *TcpServer {
 	e := make(chan int)
 	return &TcpServer{generator, e}
 }
@@ -28,7 +28,7 @@ func (this *TcpServer) Start() error {
 }
 
 func (this *TcpServer) Wait() {
-	<- this.exit
+	<-this.exit
 }
 
 func (this *TcpServer) handleAccept(listener net.Listener) {
@@ -68,5 +68,5 @@ func (this *TcpServer) handleClient(conn net.Conn) {
 			return
 		}
 	}
-	
+
 }

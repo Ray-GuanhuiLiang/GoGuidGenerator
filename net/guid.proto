@@ -1,0 +1,14 @@
+package server;
+
+message Req {
+	
+}
+
+message Resp {
+	required int32 code = 1;
+	required uint64 guid = 2;
+}
+
+service Guid {
+	rpc GetGuid(Req) returns (Resp);
+}
