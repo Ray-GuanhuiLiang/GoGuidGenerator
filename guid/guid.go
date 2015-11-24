@@ -12,14 +12,15 @@ import (
 	"strconv"
 )
 
-const MaxUint = ^uint32(0)
+const MAX_UINT uint16 = 0xFFFF
+//const MAX_UINT uint16 = 3
 
 type Guid struct {
 	sync.Mutex
-	workId uint32
-	tick   uint32
+	workId uint16
+	tick   uint16
 	lastTime uint32
-	lastTick uint32
+	lastTick uint16
 }
 
 /**
@@ -33,7 +34,7 @@ func NewGuid() (*Guid, error) {
 	return &Guid{workId: workId}, nil
 }
 
-func defaultWorkId() (uint32, error) {
+func defaultWorkId() (uint16, error) {
 	var buf bytes.Buffer
 	interfaces, err := net.Interfaces()
 	if err != nil {
@@ -63,39 +64,41 @@ func defaultWorkId() (uint32, error) {
 	//fmt.Println(bs)
 	
 	
-	ret := uint32(bs[0]) << 24 + uint32(bs[1]) << 16 + uint32(bs[2]) << 8 + uint32(bs[3])
+	//挑选16个字节的md5只的第1和第9个
+	ret := uint16(bs[0]) << 8 + uint16(bs[8])
 	//fmt.Println(ret)
 	
 	return ret, nil
 }
 
 // GUID = TimeStamp(32bit) + workId(16bit) + IncNo(16bit)
-func (this Guid) Generate() (uint64, error) {
+func (this *Guid) Generate() (uint64, error) {
 	cur := (uint32)(time.Now().Unix())
 	
 	this.Lock()
+	defer this.Unlock()
+	
+	// TODO: 如果修改了系统时间，时间提前，会导致不可生成。
 	if cur > this.lastTime {
 		this.lastTime = cur
+		this.lastTick = this.tick
 	} else {
-		if this.lastTick == MaxUint {
-			if this.tick == 0 {
-				this.Unlock()
+		if this.lastTick == 0 {
+			if this.tick == MAX_UINT {
 				return 0, errors.New("meet max id count in 1 second")
 			}
-		} else {
-			if this.tick + 1 == this.lastTick {
-				this.Unlock()
-				return 0, errors.New("meet max id count in 1 second")
-			}
+		} else if this.tick + 1 == this.lastTick {
+			return 0, errors.New("meet max id count in 1 second")
 		}
 	}
 	thatTick := this.tick
-	if this.tick == MaxUint {
+	//fmt.Printf("thatTick=%d, this.tick=%d, this.lastTick=%d\n", thatTick, this.tick, this.lastTick)
+	if this.tick == MAX_UINT {
 		this.tick = 0
 	} else {
 		this.tick++
 	}
-	this.Unlock()
+	//fmt.Printf("cur=%d, this.lastTime=%d, this.lastTick=%d, this.tick=%d\n", cur, this.lastTime, this.lastTick, this.tick)
 	
 	return uint64(cur) << 32 + (uint64)(this.workId) << 16 + uint64(thatTick), nil
 }
