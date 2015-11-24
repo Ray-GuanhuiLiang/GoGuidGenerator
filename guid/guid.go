@@ -16,7 +16,7 @@ const MAX_UINT uint16 = 0xFFFF
 //const MAX_UINT uint16 = 3
 
 type Guid struct {
-	sync.Mutex
+	lock sync.Mutex
 	workId uint16
 	tick   uint16
 	lastTime uint32
@@ -75,8 +75,8 @@ func defaultWorkId() (uint16, error) {
 func (this *Guid) Generate() (uint64, error) {
 	cur := (uint32)(time.Now().Unix())
 	
-	this.Lock()
-	defer this.Unlock()
+	this.lock.Lock()
+	defer this.lock.Unlock()
 	
 	// TODO: 如果修改了系统时间，时间提前，会导致不可生成。
 	if cur > this.lastTime {
