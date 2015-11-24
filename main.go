@@ -12,7 +12,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	s := server.NewTcpServer(*g)
+	s := server.NewTcpServer(g)
 	s.Start()
 	s.Wait()
 	fmt.Println("server end")
