@@ -1,8 +1,8 @@
 package guid
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 	"time"
 )
 
@@ -16,7 +16,7 @@ func TestTick(t *testing.T) {
 	time.Sleep(time.Second)
 	g.Generate()
 	time.Sleep(time.Second)
-	
+
 	mockMaxGenerate(g, t)
 }
 
